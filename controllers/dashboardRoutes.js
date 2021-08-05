@@ -26,7 +26,7 @@ router.get('/new', withAuth, (req, res) => {
     })
 });
 
-router.get('/edit/:id', withAuth, (req, res) => {
+router.get('/edit/:id', withAuth, async (req, res) => {
     try {
         const postData = await Post.findByPk(req.params.id, {
             // be sure to include its associated Products
@@ -44,6 +44,8 @@ router.get('/edit/:id', withAuth, (req, res) => {
         res.status(500).json(err);
     }
 });
+
+module.exports = router;
 
 
 
