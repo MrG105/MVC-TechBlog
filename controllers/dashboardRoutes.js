@@ -1,23 +1,32 @@
 const router = require("express").Router();
 const {Post, Comment, User } = require("../models/");
+const withAuth = require('../utils/auth');
 
-
-// get all posts
-router.get('/', async (req, res) => {
+router.get('/', withAuth, async (req, res) => {
     // find all Posts
     try {
       const postData = await Post.findAll({
-        // be sure to include its associated Users
-        include: [{ model: User }]      
+          where: {
+              user_id: req.session.userId
+          }
       });
-      res.render("all-posts", { postData });
+      res.render("all-posts", { 
+          layout: 'dashboard',
+          postData
+         });
     } catch (err) {
       res.status(500).json(err);
+      res.redirect('login');
     }
-  });
+});
 
-router.get('/post/:id', async (req, res) => {
-    // find one Post by its `id` value
+router.get('/new', withAuth, (req, res) => {
+    res.render('new-post', {
+        layout: 'dashboard'
+    })
+});
+
+router.get('/edit/:id', withAuth, (req, res) => {
     try {
         const postData = await Post.findByPk(req.params.id, {
             // be sure to include its associated Products
@@ -27,20 +36,17 @@ router.get('/post/:id', async (req, res) => {
             res.status(404).json({ message: 'No Post found with this id!' });
             return;
         }
-        res.render("single-post", { postData });
+        res.render("edit-post", {
+            layout: 'dashboard',
+             postData 
+            });
     } catch (err) {
         res.status(500).json(err);
     }
 });
 
-router.get('/login', (req, res) => {
-    // If the user is already logged in, redirect the request to another route
-    if (req.session.logged_in) {
-      res.redirect('/');
-      return;
-    }
-  
-    res.render('login');
-  });
 
-  module.exports = router;
+
+
+
+

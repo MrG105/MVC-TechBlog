@@ -11,5 +11,14 @@ Comment.init(
             primaryKey: true,
             autoIncrement: true,
         },
+        body: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
+    },
+    {
+        sequelize
     }
-)
+);
+
+module.exports = Comment;
